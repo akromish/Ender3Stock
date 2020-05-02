@@ -3,33 +3,40 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 def main():
+
     print("Enter the link to the creality product you'd like to check:")
+
+    # sample website:
+    # https://www.creality3dofficial.com/products/creality-ender-3-pro-3d-printer?variant=31314964578377
     website = input()
-    in_stock(website)
+
+    print(in_stock(website))
 
 
 def in_stock(web_address):
-    driver = webdriver.Chrome()
+
     # connect to product page
+    driver = webdriver.Chrome()
     driver.get(web_address)
-    stock = False
 
-    # check to see if 'add to cart' is available for product
-    try:
-        driver.find_elements_by_class_name(
-            "btn btn--full product-form__cart-submit btn--sold-out btn--secondary-accent")
-    except NoSuchElementException:
-        stock = True
+    stock_condition = ""
 
-    if stock:
-        print("yeet, we got it bois")
+    #  check add to cart span id to check stock
+    for elem in driver.find_elements_by_xpath('.//span[@id = "AddToCartText-product-template"]'):
+        stock_condition = elem.text
+
+    #  returns bool to indicate whether or not prod is in stock
+    if stock_condition == "Add to Cart":
+        return True
+    elif stock_condition == "Sold Out":
+        return False
     else:
-        print("sike, they don't got it")
+        #  not too familiar with python exceptions so picked this:
+        raise NameError("website has changed stock condition location")
 
+    #  close browser
     driver.close()
 
 
 if __name__ == '__main__':
-    # sample website:
-    # https://www.creality3dofficial.com/products/creality-ender-3-pro-3d-printer?variant=31314964578377
     main()
