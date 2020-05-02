@@ -1,19 +1,35 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
-driver = webdriver.Chrome()
-# connect to product page
-driver.get("https://www.creality3dofficial.com/products/creality-ender-3-pro-3d-printer?variant=31314964578377")
-stock = True
-# check to see if 'add to cart' is available for product
 
-for element in driver.find_elements_by_class_name\
-            ("btn btn--full product-form__cart-submit btn--sold-out btn--secondary-accent"):
-    # does not find any 'elements' by class name
-    print("Its out of stock pal")
+def main():
+    print("Enter the link to the creality product you'd like to check:")
+    website = input()
+    in_stock(website)
+
+
+def in_stock(web_address):
+    driver = webdriver.Chrome()
+    # connect to product page
+    driver.get(web_address)
     stock = False
 
-print("we moved on")
-print(stock)
+    # check to see if 'add to cart' is available for product
+    try:
+        driver.find_elements_by_class_name(
+            "btn btn--full product-form__cart-submit btn--sold-out btn--secondary-accent")
+    except NoSuchElementException:
+        stock = True
 
-driver.close()
+    if stock:
+        print("yeet, we got it bois")
+    else:
+        print("sike, they don't got it")
 
+    driver.close()
+
+
+if __name__ == '__main__':
+    # sample website:
+    # https://www.creality3dofficial.com/products/creality-ender-3-pro-3d-printer?variant=31314964578377
+    main()
